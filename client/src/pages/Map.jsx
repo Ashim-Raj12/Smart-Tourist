@@ -90,68 +90,71 @@ const Map = () => {
   }, [userLocation]);
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">Safety Map</h2>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white p-4">
+      <div className="container mx-auto max-w-6xl">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Safety Map</h2>
 
-      {geoError && (
-        <div className="bg-yellow-600 text-white p-4 rounded mb-4 text-center">
-          Location Error: {geoError}
-        </div>
-      )}
-
-      {alertMessage && (
-        <div className="bg-red-600 text-white p-4 rounded mb-4 text-center">
-          {alertMessage}
-        </div>
-      )}
-
-      <div className="h-96 w-full">
-        {userLocation ? (
-          <MapContainer
-            key={mapKey}
-            center={userLocation}
-            zoom={13}
-            style={{ height: '100%', width: '100%' }}
-            whenCreated={(mapInstance) => {
-              mapRef.current = mapInstance;
-            }}
-          >
-            <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            />
-            {zones.map((zone) => (
-              <Circle
-                key={zone._id}
-                center={[zone.lat, zone.lng]}
-                radius={zone.radius}
-                pathOptions={{ color: zone.type === 'safe' ? 'green' : 'red' }}
-              >
-                <Popup>{zone.name} - {zone.type} zone</Popup>
-              </Circle>
-            ))}
-            <Circle
-              center={userLocation}
-              radius={10}
-              pathOptions={{ color: 'blue' }}
-            >
-              <Popup>Your Location</Popup>
-            </Circle>
-          </MapContainer>
-        ) : (
-          <div className="h-full flex items-center justify-center text-white">
-            Getting your location...
+        {geoError && (
+          <div className="bg-yellow-500/20 border border-yellow-500 text-yellow-400 p-4 rounded-lg mb-6 text-center animate-fade-in">
+            Location Error: {geoError}
           </div>
         )}
-      </div>
 
-      <div className="text-center mt-4">
-        <button
-          onClick={retryMap}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Retry Map
-        </button>
+        {alertMessage && (
+          <div className="bg-red-500/20 border border-red-500 text-red-400 p-4 rounded-lg mb-6 text-center animate-shake">
+            {alertMessage}
+          </div>
+        )}
+
+        <div className="h-96 md:h-[500px] lg:h-[600px] w-full bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
+          {userLocation ? (
+            <MapContainer
+              key={mapKey}
+              center={userLocation}
+              zoom={13}
+              style={{ height: '100%', width: '100%' }}
+              whenCreated={(mapInstance) => {
+                mapRef.current = mapInstance;
+              }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+              {zones.map((zone) => (
+                <Circle
+                  key={zone._id}
+                  center={[zone.lat, zone.lng]}
+                  radius={zone.radius}
+                  pathOptions={{ color: zone.type === 'safe' ? 'green' : 'red' }}
+                >
+                  <Popup>{zone.name} - {zone.type} zone</Popup>
+                </Circle>
+              ))}
+              <Circle
+                center={userLocation}
+                radius={10}
+                pathOptions={{ color: 'blue' }}
+              >
+                <Popup>Your Location</Popup>
+              </Circle>
+            </MapContainer>
+          ) : (
+            <div className="h-full flex flex-col items-center justify-center text-gray-400">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mb-4"></div>
+              Getting your location...
+            </div>
+          )}
+        </div>
+
+        <div className="text-center mt-6">
+          <button
+            onClick={retryMap}
+            className="cursor-pointer bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            Retry Map
+          </button>
+        </div>
       </div>
     </div>
   );
