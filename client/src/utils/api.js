@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://smart-tourist-backend.onrender.com',
+  baseURL: 'https://smart-tourist-backend.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
