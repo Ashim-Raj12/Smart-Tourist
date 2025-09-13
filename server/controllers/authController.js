@@ -77,7 +77,38 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         emergencyContact: user.emergencyContact,
+        profilePic: user.profilePic,
         blockchainId: user.blockchainId,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, emergencyContact, profilePic } = req.body;
+    const userId = req.user.id;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (emergencyContact) updateData.emergencyContact = emergencyContact;
+    if (profilePic !== undefined) updateData.profilePic = profilePic;
+
+    const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json({
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        emergencyContact: user.emergencyContact,
+        profilePic: user.profilePic,
       },
     });
   } catch (error) {

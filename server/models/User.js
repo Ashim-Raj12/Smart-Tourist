@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   emergencyContact: { type: String, required: true },
+  profilePic: { type: String, default: '' },
   blockchainId: { type: String, unique: true },
 }, { timestamps: true });
 

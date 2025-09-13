@@ -8,6 +8,7 @@ const Map = () => {
   const [zones, setZones] = useState([]);
   const [userLocation, setUserLocation] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
+  const [currentZoneType, setCurrentZoneType] = useState('safe');
   const [mapKey, setMapKey] = useState(0);
   const [geoError, setGeoError] = useState(null);
   const { user } = useContext(AuthContext);
@@ -65,11 +66,15 @@ const Map = () => {
   const checkLocation = async (lat, lng) => {
     try {
       const res = await api.post('/zones/check', { lat, lng });
-      if (res.data.inRiskyZone) {
-        setAlertMessage('Warning: You are in a risky zone!');
-        await api.post('/alerts/log', { zoneId: res.data.zoneId, message: 'Entered risky zone' });
+      if (res.data.currentZoneType && res.data.currentZoneType !== 'safe') {
+        setAlertMessage(`Warning: You are in a ${res.data.currentZoneType} zone!`);
+        if (res.data.zone && res.data.zone._id) {
+          await api.post('/alerts/log', { zoneId: res.data.zone._id, message: `Entered ${res.data.currentZoneType} zone` });
+        }
+        setCurrentZoneType(res.data.currentZoneType);
       } else {
         setAlertMessage('');
+        setCurrentZoneType('safe');
       }
     } catch (err) {
       console.error('Failed to check location', err);
@@ -106,6 +111,10 @@ const Map = () => {
           </div>
         )}
 
+        <div className={`p-4 rounded-lg mb-6 text-center ${currentZoneType === 'safe' ? 'bg-green-500/20 border border-green-500 text-green-400' : currentZoneType === 'moderate' ? 'bg-yellow-500/20 border border-yellow-500 text-yellow-400' : 'bg-red-500/20 border border-red-500 text-red-400'}`}>
+          Current Zone: {currentZoneType.charAt(0).toUpperCase() + currentZoneType.slice(1)}
+        </div>
+
         <div className="h-96 md:h-[500px] lg:h-[600px] w-full bg-gray-800 rounded-lg shadow-2xl overflow-hidden">
           {userLocation ? (
             <MapContainer
@@ -121,16 +130,21 @@ const Map = () => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               />
-              {zones.map((zone) => (
-                <Circle
-                  key={zone._id}
-                  center={[zone.lat, zone.lng]}
-                  radius={zone.radius}
-                  pathOptions={{ color: zone.type === 'safe' ? 'green' : 'red' }}
-                >
-                  <Popup>{zone.name} - {zone.type} zone</Popup>
-                </Circle>
-              ))}
+              {zones.map((zone) => {
+                let color = 'green';
+                if (zone.type === 'moderate') color = 'yellow';
+                else if (zone.type === 'danger') color = 'red';
+                return (
+                  <Circle
+                    key={zone._id}
+                    center={[zone.lat, zone.lng]}
+                    radius={zone.radius}
+                    pathOptions={{ color }}
+                  >
+                    <Popup>{zone.name} - {zone.type} zone</Popup>
+                  </Circle>
+                );
+              })}
               <Circle
                 center={userLocation}
                 radius={10}

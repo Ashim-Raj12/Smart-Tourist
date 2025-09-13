@@ -18,7 +18,7 @@ const Chatbot = () => {
     setMessages([...messages, userMessage]);
 
     try {
-      const res = await api.post('/chatbot', { question: input });
+      const res = await api.post('/chatbot/response', { question: input });
       const botMessage = { text: res.data.answer, sender: 'bot' };
       setMessages(prev => [...prev, botMessage]);
     } catch (err) {

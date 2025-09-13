@@ -29,20 +29,24 @@ export const checkLocation = async (req, res) => {
       return res.status(400).json({ message: 'Latitude and longitude required' });
     }
 
-    const zones = await Zone.find({ type: 'risky' });
-    let inRiskyZone = false;
-    let riskyZone = null;
+    const zones = await Zone.find();
+    let currentZoneType = 'safe'; // default
+    let currentZone = null;
+
+    // Prioritize danger > moderate > safe if in multiple zones
+    const zonePriority = { danger: 3, moderate: 2, safe: 1 };
 
     for (const zone of zones) {
       const distance = getDistance(lat, lng, zone.lat, zone.lng);
       if (distance * 1000 < zone.radius) { // radius in meters
-        inRiskyZone = true;
-        riskyZone = zone;
-        break;
+        if (zonePriority[zone.type] > zonePriority[currentZoneType]) {
+          currentZoneType = zone.type;
+          currentZone = zone;
+        }
       }
     }
 
-    res.json({ inRiskyZone, zone: riskyZone });
+    res.json({ currentZoneType, zone: currentZone });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

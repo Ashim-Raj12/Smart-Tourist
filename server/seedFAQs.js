@@ -15,11 +15,19 @@ const faqs = [
   },
   {
     question: 'What are safe zones?',
-    answer: 'Safe zones are areas marked as low-risk in our app. You can view them on the map feature. Always check the app before visiting new areas.'
+    answer: 'Safe zones are areas marked as low-risk in our app. You can view them on the map feature as green circles. Always check the app before visiting new areas.'
+  },
+  {
+    question: 'What are moderate zones?',
+    answer: 'Moderate zones are areas with some reported incidents. Exercise caution when entering these areas and stay alert.'
+  },
+  {
+    question: 'What are danger zones?',
+    answer: 'Danger zones are high-risk areas with frequent incidents. The app will alert you if you enter one. Avoid these areas whenever possible.'
   },
   {
     question: 'How does the emergency contact work?',
-    answer: 'During registration, you can set an emergency contact. In case of SOS, the app will attempt to alert this contact with your location.'
+    answer: 'During registration, you can set an emergency contact. In case of SOS, the app will call this contact.'
   },
   {
     question: 'Can I update my profile?',
@@ -31,7 +39,7 @@ const faqs = [
   },
   {
     question: 'How to use the map?',
-    answer: 'The map shows your location and marks safe (green) and risky (red) zones. Use it to plan your routes and stay informed.'
+    answer: 'The map shows your location and marks safe (green), moderate (yellow), and danger (red) zones. Use it to plan your routes and stay informed.'
   },
   {
     question: 'What information do I need to register?',
@@ -49,7 +57,7 @@ const faqs = [
 
 const seedFAQs = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
     await FAQ.deleteMany(); // Clear existing FAQs

@@ -98,7 +98,7 @@ export const getResponse = async (req, res) => {
     }
 
     // Threshold for matching
-    if (bestScore > 0.3) {
+    if (bestScore > 0.2) {
       return res.json({ answer: bestMatch.answer });
     } else {
       // Fallback responses based on keywords
@@ -128,10 +128,33 @@ export const getResponse = async (req, res) => {
             "Use the map feature in our app to view safe and risky zones in your area.",
         });
       } else {
-        return res.json({
-          answer:
-            "I'm sorry, I don't have specific information for that. Please try rephrasing your question or contact support for assistance.",
-        });
+        // Expanded keyword-based responses
+        if (lowerQuestion.includes("zone") || lowerQuestion.includes("area")) {
+          return res.json({
+            answer: "Our app categorizes areas into safe (green), moderate (yellow), and danger (red) zones. Check the map to see your current zone and plan safely."
+          });
+        } else if (lowerQuestion.includes("register") || lowerQuestion.includes("sign up") || lowerQuestion.includes("account")) {
+          return res.json({
+            answer: "To register, provide your name, email, password, and emergency contact number. This helps us keep you safe."
+          });
+        } else if (lowerQuestion.includes("profile") || lowerQuestion.includes("update")) {
+          return res.json({
+            answer: "You can update your profile information, including emergency contact, on the Profile page."
+          });
+        } else if (lowerQuestion.includes("logout") || lowerQuestion.includes("sign out")) {
+          return res.json({
+            answer: "To log out, click the Logout button in the navigation menu."
+          });
+        } else if (lowerQuestion.includes("data") || lowerQuestion.includes("secure") || lowerQuestion.includes("privacy")) {
+          return res.json({
+            answer: "Your data is secure. We use encryption and only use your information for safety purposes."
+          });
+        } else {
+          return res.json({
+            answer:
+              "I'm sorry, I don't have specific information for that. Please try rephrasing your question or contact support for assistance.",
+          });
+        }
       }
     }
   } catch (error) {
